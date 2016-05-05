@@ -4,8 +4,8 @@ from config import *
 # Set vars
 listhandle = ''
 listslug = ''
-listurl = raw_input("Paste list URL here (Example: https://twitter.com/user/lists/list-slug/): ")
-match = re.search( 'twitter.com/(.*)/lists/([\w-]+)/?' , listurl)
+listurl = raw_input('Paste list URL here (Example: https://twitter.com/user/lists/list-slug/): ')
+match = re.search('twitter.com/(.*)/lists/([\w-]+)/?' , listurl)
 if match:
     listhandle = match.group(1)
     # print listhandle
@@ -26,7 +26,7 @@ api = tweepy.API(auth)
 
 # Set up CSV
 c = csv.writer(open(listslug+'.csv', 'wb'))
-c.writerow(['id','name','handle','desc','link','img'])
+c.writerow(['id','name','handle','desc','link','thumb','img'])
 
 # See: https://twitter.com/carldavaz/lists/rgstaff
 # See: https://dev.twitter.com/rest/reference/get/lists/members
@@ -34,12 +34,13 @@ c.writerow(['id','name','handle','desc','link','img'])
 list = api.list_members(listhandle, listslug, count='5000')
 for i, member in enumerate(list):
     # Set member vars
-    name = member.name.encode("utf-8")
-    sname = member.screen_name.encode("utf-8")
-    desc = member.description.encode("utf-8")
+    name = member.name.encode('utf-8')
+    sname = member.screen_name.encode('utf-8')
+    desc = member.description.encode('utf-8')
     link = 'http://twitter.com/' + sname
-    img = member.profile_image_url
+    thumb = member.profile_image_url
+    img = thumb.replace('_normal.', '_400x400.')
     # Write row for each
-    c.writerow([i,name,sname,desc,link,img])
+    c.writerow([i,name,sname,desc,link,thumb,img])
 
 print 'Successfully created a CSV of your list in this directory with the name ' + listslug + '.csv'
